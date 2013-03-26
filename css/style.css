@@ -1,0 +1,18 @@
+.hero-unit {
+  margin-top:20px;
+}
+.file {
+    opacity: 0;
+    border: 1px solid;
+    margin-left: -276px;
+    cursor: pointer;
+    margin-top: -2px;
+    height: 40px;
+}
+.original, canvas {
+  max-width: 100%;
+  display:none;
+}
+.pg{
+  display:none;
+}

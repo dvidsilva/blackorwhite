@@ -1,0 +1,110 @@
+<!html >
+<meta charset="utf-8">
+<head>
+    <title>Black or White by @DvidSilva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tryout for the quest @ http://codetag.me/quest/104/?c=12">
+    <meta name="author" content="dvidsilva">
+
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet" >
+</head>
+<body>
+<div class='container-fluid'>
+    <div class="hero-unit">
+        <h1>Black or White</h1>
+        <p>Choose an image to upload and transform it to grayscale.</p>
+        <p class='choose'>
+            <a class="btn btn-primary btn-large ">Choose an image</a>
+            <input class='file' type="file">        
+        </p>
+    </div>
+    <div class='row-fluid pg'>
+        <div class=' span12' >
+            <div class="pagination pagination-centered">
+                <ul class='depth'>
+                    <li class="disabled"><a>Choose the gray depth</a><li>
+                    <li data-depth='8'><a href='#grayed'>8</a></li>
+                    <li data-depth='4'><a href='#grayed'>4</a></li>
+                    <li data-depth='2'><a href='#grayed'>2</a></li>
+                    <li data-depth='1'><a href='#grayed'>1</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class='row-fluid imgs'>
+        <a name='grayed'></a>
+        <div class='span5 org'></div>
+        <div class='span5 offset1  '><canvas class='gray img-polaroid'></canvas></div>
+    </div>
+</div>
+
+
+
+<script src="./js/jquery.js" ></script>
+<script src="./js/caman.full.min.js" ></script>
+<script >
+$(document).ready(function() {
+        //This reads the file from the guy's computer and displays it
+        $(".file").change(function(e) {
+            for (var i = 0; i < e.originalEvent.srcElement.files.length; i++) {
+                var file = e.originalEvent.srcElement.files[i];
+                var img = document.createElement("img");
+                img.className = "original img-polaroid";
+                var reader = new FileReader();
+                reader.onloadend = function() {
+                  img.src = reader.result;
+                }
+                reader.readAsDataURL(file);
+                $(".org").html(img);
+                $(".pg").show('slow');
+                $(".original").show();
+            }
+            });
+});
+$(document).ready(function(){ 
+    $(".depth li").click(function(){
+        $(".gray").show();
+        var destX   = 0;
+        var destY   = 0;
+        var canvas  = $(".gray");
+        var context = canvas[0].getContext('2d');
+        var img = $(".original");
+        canvas[0].width = img[0].width;
+        canvas[0].height = img[0].height;
+        context.drawImage( img[0] , destX, destY, img[0].width, img[0].height);
+        grayScale(context, canvas[0], $(this).data('depth') );
+
+    });
+});
+/*
+Caman is not so cool, is too heavy to get in there and modify it and it doesn't auto do the 1,2,4 or 8 depth
+Caman(".gray", $(".original").attr('src') , function () {
+    this.render();    
+});
+*/
+
+
+
+function grayScale(context, canvas, depth) {
+    var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+    var pixels  = imgData.data;
+    ConversionFactor = 255 / (Math.pow(2,depth) - 1); 
+    for (var i = 0, n = pixels.length; i < n; i += 4) {
+        var grayscale = pixels[i] * .3 + pixels[i+1] * .59 + pixels[i+2] * .11;
+        grayscale = parseInt((grayscale / ConversionFactor) + 0.5) * ConversionFactor
+        //not necesarily sure still how this works
+        pixels[i  ] = grayscale;        // red
+        pixels[i+1] = grayscale;        // green
+        pixels[i+2] = grayscale;        // blue
+    }
+    //redraw the image in black & white
+    context.putImageData(imgData, 0, 0);
+}
+
+</script>
+</body>
+</html>
