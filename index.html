@@ -6,6 +6,7 @@
     <meta name="description" content="Tryout for the quest @ http://codetag.me/quest/104/?c=12">
     <meta name="author" content="dvidsilva">
 
+
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet" >
 </head>
@@ -16,7 +17,7 @@
         <p>Choose an image to upload and transform it to grayscale.</p>
         <p class='choose'>
             <a class="btn btn-primary btn-large ">Choose an image</a>
-            <input class='file' type="file">        
+            <input class='file' type="file">
         </p>
     </div>
     <div class='row-fluid pg'>
@@ -62,7 +63,7 @@ $(document).ready(function() {
             }
             });
 });
-$(document).ready(function(){ 
+$(document).ready(function(){
     $(".depth li").click(function(){
         $(".gray").show();
         var destX   = 0;
@@ -80,7 +81,7 @@ $(document).ready(function(){
 /*
 Caman is not so cool, is too heavy to get in there and modify it and it doesn't auto do the 1,2,4 or 8 depth
 Caman(".gray", $(".original").attr('src') , function () {
-    this.render();    
+    this.render();
 });
 */
 
@@ -89,7 +90,7 @@ Caman(".gray", $(".original").attr('src') , function () {
 function grayScale(context, canvas, depth) {
     var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
     var pixels  = imgData.data;
-    ConversionFactor = 255 / (Math.pow(2,depth) - 1); 
+    ConversionFactor = 255 / (Math.pow(2,depth) - 1);
     for (var i = 0, n = pixels.length; i < n; i += 4) {
         var grayscale = pixels[i] * .3 + pixels[i+1] * .59 + pixels[i+2] * .11;
         grayscale = parseInt((grayscale / ConversionFactor) + 0.5) * ConversionFactor
