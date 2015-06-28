@@ -30,6 +30,7 @@
                     <li data-depth='2'><a href='#grayed'>2</a></li>
                     <li data-depth='1'><a href='#grayed'>1</a></li>
                     <li data-depth='mv'><a href='#grayed'>mv</a></li>
+                    <li data-depth='pride'><a href='#grayed'>pride</a></li>
                 </ul>
             </div>
         </div>
@@ -48,98 +49,6 @@
 
 
 <script src="./js/jquery.js" ></script>
-<script >
-$(document).ready(function() {
-        //This reads the file from the guy's computer and displays it
-        $(".file").change(function(e) {
-            for (var i = 0; i < e.originalEvent.srcElement.files.length; i++) {
-                var file = e.originalEvent.srcElement.files[i];
-                var img = document.createElement("img");
-                img.className = "original img-polaroid";
-                var reader = new FileReader();
-                reader.onloadend = function() {
-                  img.src = reader.result;
-                }
-                reader.readAsDataURL(file);
-                $(".org").html(img);
-                $(".pg").show('slow');
-                $(".original").show();
-            }
-            });
-});
-$(document).ready(function(){
-    $(".depth li").click(function(){
-        $(".gray").show();
-        var destX   = 0;
-        var destY   = 0;
-        var canvas  = $(".gray");
-        var context = canvas[0].getContext('2d');
-        var img = $(".original");
-        canvas[0].width = img[0].width;
-        canvas[0].height = img[0].height;
-        context.drawImage( img[0] , destX, destY, img[0].width, img[0].height);
-        if($(this).data('depth')==='mv'){
-          getMicroView(context, canvas[0]);
-        }else{
-          grayScale(context, canvas[0], $(this).data('depth') );
-        }
-    });
-});
-/*
-Caman is not so cool, is too heavy to get in there and modify it and it doesn't auto do the 1,2,4 or 8 depth
-Caman(".gray", $(".original").attr('src') , function () {
-    this.render();
-});
-*/
-
-// 136 = (10,2)
-function getMicroView(context, canvas) {
-    var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    var pixels  = imgData.data;
-    var x = [];
-    var y = [];
-    var row = 0;
-    var depth = 1;
-    ConversionFactor = 255 / (Math.pow(2, depth) - 1);
-    for (var i = 0, n = pixels.length; i < n; i += 4) {
-      if(i%63===0&&i>0){
-        row++;
-      }
-        var grayscale = pixels[i] * .3 + pixels[i+1] * .59 + pixels[i+2] * .11;
-        grayscale = parseInt((grayscale / ConversionFactor) + 0.5) * ConversionFactor
-        if(grayscale<100){
-          x.push( ( i / 4) - (row * 63) );
-          y.push(row);
-        }
-        pixels[i  ] = grayscale;        // red
-        pixels[i+1] = grayscale;        // green
-        pixels[i+2] = grayscale;        // blue
-    }
-    console.log(x);
-    console.log(y);
-    var result = "x = [" + x.toString() + "];";
-    result += "\n y = [" + y.toString() + "];";
-    $('#pixels').val(result);
-    context.putImageData(imgData, 0, 0);
-}
-
-
-function grayScale(context, canvas, depth) {
-    var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    var pixels  = imgData.data;
-    ConversionFactor = 255 / (Math.pow(2,depth) - 1);
-    for (var i = 0, n = pixels.length; i < n; i += 4) {
-        var grayscale = pixels[i] * .3 + pixels[i+1] * .59 + pixels[i+2] * .11;
-        grayscale = parseInt((grayscale / ConversionFactor) + 0.5) * ConversionFactor
-        //not necesarily sure still how this works
-        pixels[i  ] = grayscale;        // red
-        pixels[i+1] = grayscale;        // green
-        pixels[i+2] = grayscale;        // blue
-    }
-    //redraw the image in black & white
-    context.putImageData(imgData, 0, 0);
-}
-
-</script>
+<script src="./js/app.js"></script>
 </body>
 </html>
