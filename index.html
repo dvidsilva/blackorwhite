@@ -29,6 +29,7 @@
                     <li data-depth='4'><a href='#grayed'>4</a></li>
                     <li data-depth='2'><a href='#grayed'>2</a></li>
                     <li data-depth='1'><a href='#grayed'>1</a></li>
+                    <li data-depth='mv'><a href='#grayed'>mv</a></li>
                 </ul>
             </div>
         </div>
@@ -38,6 +39,9 @@
         <a name='grayed'></a>
         <div class='span5 org'></div>
         <div class='span5 offset1  '><canvas class='gray img-polaroid'></canvas></div>
+    </div>
+    <div class='row-fluid'>
+      <textarea id="pixels"></textarea>
     </div>
 </div>
 
@@ -74,8 +78,11 @@ $(document).ready(function(){
         canvas[0].width = img[0].width;
         canvas[0].height = img[0].height;
         context.drawImage( img[0] , destX, destY, img[0].width, img[0].height);
-        grayScale(context, canvas[0], $(this).data('depth') );
-
+        if($(this).data('depth')==='mv'){
+          getMicroView(context, canvas[0]);
+        }else{
+          grayScale(context, canvas[0], $(this).data('depth') );
+        }
     });
 });
 /*
@@ -85,6 +92,36 @@ Caman(".gray", $(".original").attr('src') , function () {
 });
 */
 
+// 136 = (10,2)
+function getMicroView(context, canvas) {
+    var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+    var pixels  = imgData.data;
+    var x = [];
+    var y = [];
+    var row = 0;
+    var depth = 1;
+    ConversionFactor = 255 / (Math.pow(2, depth) - 1);
+    for (var i = 0, n = pixels.length; i < n; i += 4) {
+      if(i%63===0&&i>0){
+        row++;
+      }
+        var grayscale = pixels[i] * .3 + pixels[i+1] * .59 + pixels[i+2] * .11;
+        grayscale = parseInt((grayscale / ConversionFactor) + 0.5) * ConversionFactor
+        if(grayscale<100){
+          x.push( ( i / 4) - (row * 63) );
+          y.push(row);
+        }
+        pixels[i  ] = grayscale;        // red
+        pixels[i+1] = grayscale;        // green
+        pixels[i+2] = grayscale;        // blue
+    }
+    console.log(x);
+    console.log(y);
+    var result = "x = [" + x.toString() + "];";
+    result += "\n y = [" + y.toString() + "];";
+    $('#pixels').val(result);
+    context.putImageData(imgData, 0, 0);
+}
 
 
 function grayScale(context, canvas, depth) {
